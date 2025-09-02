@@ -22,12 +22,6 @@ header {
     box-sizing: border-box;
 }
 
-.branding {
-    display: flex;
-    align-items: center;
-    gap: 15px; 
-}
-
 nav {
     display: flex;
     gap: 20px;
@@ -36,6 +30,30 @@ nav {
 nav a {
     color: var(--black);
     text-decoration: none;
+    border: 2px double transparent;
+    transition: border-color 0.3s ease;
+}
+nav a:hover {
+    border-color: var(--black)
+}
+
+.branding {
+    display: flex;
+    align-items: center;
+    gap: 15px; 
+}
+
+.card-header {
+    background-color: var(--off-white);
+}
+
+.card-link {
+    color: var(--black);
+    text-decoration: none;
+}
+
+.card-body {
+    background-color: var(--white);
 }
 
 #wrapper {
