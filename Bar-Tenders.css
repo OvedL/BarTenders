@@ -57,6 +57,22 @@ nav a:hover {
     gap: 15px; 
 }
 
+.info-card {
+    background-color: var(--off-white);
+    padding: 10px 10px 20px 20px;
+    border-radius: 15px;
+    border: 2px solid lightgrey; 
+}
+
+.info-card-body {
+    background-color: var(--off-white);
+}
+
+.info-card-title {
+    text-align: center;
+    font-weight: bold;
+}
+
 .card-header {
     background-color: var(--off-white);
 }
