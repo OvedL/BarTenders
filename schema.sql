@@ -20,18 +20,6 @@ CREATE TABLE IF NOT EXISTS BARTENDER_IMG (
   createdAt DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE IF NOT EXISTS BARTENDER (
-  bartenderID    INTEGER PRIMARY KEY AUTOINCREMENT,
-  yearsOfService INTEGER CHECK (yearsOfService >= 0),
-  bio            TEXT,
-  city           TEXT,
-  state          TEXT,
-  priorEvents    INTEGER CHECK (priorEvents >= 0),
-  imgID          INTEGER,  -- optional profile image
-  createdAt      DATETIME DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (imgID) REFERENCES BARTENDER_IMG(imgID) ON DELETE SET NULL
-);
-
 CREATE TABLE IF NOT EXISTS VENUE (
   venueID     INTEGER PRIMARY KEY AUTOINCREMENT,
   venueName   TEXT NOT NULL,
@@ -70,3 +58,4 @@ CREATE TABLE IF NOT EXISTS REVIEW (
   FOREIGN KEY (bartenderID) REFERENCES BARTENDER(bartenderID)   ON DELETE SET NULL,
   UNIQUE (eventID, reviewerID)   -- prevents duplicate review by same user for event
 );
+
