@@ -43,6 +43,23 @@ nav a:hover {
     box-shadow: 0px 3px 6px rgba(0,0,0,0.2);
 }
 
+footer {
+    background-color: var(--off-white);
+    width: 100%;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0 20px;
+    box-sizing: border-box;
+}
+
+label.required::after {
+    content: " *";
+    color: red;
+}
+
+
 /* Responsive adjustment for wider screens */
 @media (min-width: 992px) {
     nav a {
@@ -86,6 +103,11 @@ nav a:hover {
     background-color: var(--white);
 }
 
+.signInPageImage {
+    display: block;
+    margin: 10px auto;
+}
+
 #wrapper {
     width: 95%;
     min-height: 100vh;
@@ -95,4 +117,47 @@ nav a:hover {
     border-radius: 15px;
 }
 
+#signInBox {
+    width: 50%;
+    margin: 5% auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background: var(--off-white);
+    box-shadow: 5px 5px 10px #2B2118;
+}
 
+#signInBox input {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background: var(--white)
+}
+
+#signInBox button {
+    width: 100%;
+    padding: 10px;
+    background: var(--wine-red);
+    color: var(--gold);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#signInBox button:hover {
+    background: var(--gold);
+    color: var(--black);
+}
+
+#toggleLogInForm {
+    font-weight: bold;
+    font-size: 12px;
+    color: var(--black);
+}
+
+#toggleLogInForm:hover {
+    color: var(--gold);
+}
