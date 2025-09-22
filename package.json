@@ -18,7 +18,11 @@
   },
   "homepage": "https://github.com/OvedL/BarTenders#readme",
   "dependencies": {
+    "bcrypt": "^6.0.0",
+    "dotenv": "^17.2.2",
     "express": "^5.1.0",
+    "express-mysql-session": "^3.0.3",
+    "express-session": "^1.18.2",
     "mysql2": "^3.14.5"
   }
 }
