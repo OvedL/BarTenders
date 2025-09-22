@@ -1,60 +1,79 @@
-CREATE TABLE IF NOT EXISTS USER (
-  userID        INTEGER PRIMARY KEY AUTOINCREMENT,
-  firstName     TEXT NOT NULL,
-  lastName      TEXT NOT NULL,
-  email         TEXT NOT NULL UNIQUE,
-  phoneNumber   TEXT,              -- phone as TEXT is safest
-  city          TEXT,
-  state         TEXT,
-  zipcode       TEXT,
+DROP TABLE REVIEW;
+DROP TABLE EVENT_INFO;
+DROP TABLE VENUE;
+DROP TABLE USER_INFO;
+DROP TABLE BARTENDER;
+DROP TABLE BARTENDER_IMG;
+
+
+CREATE TABLE IF NOT EXISTS BARTENDER_IMG (
+  imgID     INTEGER PRIMARY KEY AUTO_INCREMENT,
+  imgName   VARCHAR(255) NOT NULL,
+  path      VARCHAR(255) NOT NULL,
+  createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS BARTENDER (
+  bartenderID INTEGER PRIMARY KEY AUTO_INCREMENT,
+  yearsOfService INTEGER,
+  bio VARCHAR(255),
+  city VARCHAR(30),
+  state VARCHAR(30),
+  priorEvents VARCHAR(255),
+  imgID INTEGER,
+  FOREIGN KEY (imgID) REFERENCES BARTENDER_IMG(imgID) ON DELETE SET NULL
+);
+
+CREATE TABLE IF NOT EXISTS USER_INFO (
+  userID        INTEGER PRIMARY KEY AUTO_INCREMENT,
+  firstName     VARCHAR(50) NOT NULL,
+  lastName      VARCHAR(50) NOT NULL,
+  email         VARCHAR(255) NOT NULL UNIQUE,
+  password      VARCHAR(255) NOT NULL,
+  phoneNumber   VARCHAR(15),              -- phone as VARCHAR(255) is safest
+  city          VARCHAR(30),
+  state         VARCHAR(30),
+  zipcode       VARCHAR(15),
   bartenderID   INTEGER,           -- nullable: user may or may not be a bartender
-  createdAt     DATETIME DEFAULT CURRENT_TIMESTAMP,
-  updatedAt     DATETIME DEFAULT CURRENT_TIMESTAMP,
+  createdAt     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (bartenderID) REFERENCES BARTENDER(bartenderID) ON DELETE SET NULL
 );
 
-CREATE TABLE IF NOT EXISTS BARTENDER_IMG (
-  imgID     INTEGER PRIMARY KEY AUTOINCREMENT,
-  imgName   TEXT NOT NULL,
-  path      TEXT NOT NULL,
-  createdAt DATETIME DEFAULT CURRENT_TIMESTAMP
-);
-
 CREATE TABLE IF NOT EXISTS VENUE (
-  venueID     INTEGER PRIMARY KEY AUTOINCREMENT,
-  venueName   TEXT NOT NULL,
-  street      TEXT,
-  city        TEXT,
-  state       TEXT,
-  zipcode     TEXT
+  venueID     INTEGER PRIMARY KEY AUTO_INCREMENT,
+  venueName   VARCHAR(255) NOT NULL,
+  street      VARCHAR(255),
+  city        VARCHAR(30),
+  state       VARCHAR(30),
+  zipcode     VARCHAR(15)
 );
 
-CREATE TABLE IF NOT EXISTS EVENT (
-  eventID       INTEGER PRIMARY KEY AUTOINCREMENT,
+CREATE TABLE IF NOT EXISTS EVENT_INFO (
+  eventID       INTEGER PRIMARY KEY AUTO_INCREMENT,
   eventDate     DATE NOT NULL,         -- or store only start/end as timestamps
   startTime     DATETIME NOT NULL,
   endTime       DATETIME NOT NULL,
-  eventTier     TEXT,                  -- free text or use a lookup later
-  drinkPackage  TEXT,                  -- free text or use a lookup later
+  eventTier     VARCHAR(50),                  -- free VARCHAR(255) or use a lookup later
+  drinkPackage  VARCHAR(50),                  -- free VARCHAR(255) or use a lookup later
   userID        INTEGER NOT NULL,      -- client/organizer
   bartenderID   INTEGER,               -- assigned bartender (optional at first)
   venueID       INTEGER,               -- optional
-  createdAt     DATETIME DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (userID)      REFERENCES USER(userID)        ON DELETE CASCADE,
+  createdAt     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (userID)      REFERENCES USER_INFO(userID)        ON DELETE CASCADE,
   FOREIGN KEY (bartenderID) REFERENCES BARTENDER(bartenderID) ON DELETE SET NULL,
   FOREIGN KEY (venueID)     REFERENCES VENUE(venueID)      ON DELETE SET NULL
 );
 
 CREATE TABLE IF NOT EXISTS REVIEW (
-  reviewID   INTEGER PRIMARY KEY AUTOINCREMENT,
+  reviewID   INTEGER PRIMARY KEY AUTO_INCREMENT,
   eventID    INTEGER NOT NULL,
-  ratings    INTEGER NOT NULL CHECK (ratings BETWEEN 1 AND 5),
-  comments   TEXT,
+  ratings ENUM('1','2','3','4','5') NOT NULL,
+  comments   VARCHAR(255),
   reviewerID INTEGER,                  -- optional: which USER wrote it
   bartenderID INTEGER,                 -- optional: who is being reviewed
-  createdAt  DATETIME DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (eventID)     REFERENCES EVENT(eventID)           ON DELETE CASCADE,
-  FOREIGN KEY (reviewerID)  REFERENCES USER(userID)             ON DELETE SET NULL,
+  createdAt  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (eventID)     REFERENCES EVENT_INFO(eventID)           ON DELETE CASCADE,
+  FOREIGN KEY (reviewerID)  REFERENCES USER_INFO(userID)             ON DELETE SET NULL,
   FOREIGN KEY (bartenderID) REFERENCES BARTENDER(bartenderID)   ON DELETE SET NULL,
   UNIQUE (eventID, reviewerID)   -- prevents duplicate review by same user for event
 );
