@@ -115,11 +115,11 @@ app.get('/dashboard', (req, res) => {
 
 
 // Logout
-app.post('/logout', (req, res) => {
+app.post('/api/logout', (req, res) => {
   req.session.destroy((err) => {
     res.clearCookie("bartenders_session_name");
-    res.redirect('/');
-  });
+    if (err) return res.json({ success: false });
+    res.json({ success: true });  });
 });
 
 
@@ -127,3 +127,9 @@ app.post('/logout', (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
 });
+
+// Session status endpoint for the navbar
+app.get('/api/session', (req, res) => {
+  res.json({ loggedIn: !!req.session.userId });
+});
+

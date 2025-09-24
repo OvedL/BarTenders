@@ -27,7 +27,8 @@
                 <a href="index.html">Home</a>
                 <a href="">Plan Event</a>
                 <a href="">Interested in Bartending</a>
-                <a href="signin.html">Sign In</a>
+                <a href="signin.html" class="guest-only">Sign In</a>
+                <a href="#" id="logoutLink" class="auth-only" hidden>Logout</a>
             </nav>
 
         </header>
@@ -115,6 +116,30 @@
         <footer>
             &copy; 2025 Bar-Tenders
         </footer>
+
+  <script>
+    async function refreshNav() {
+      try {
+        const res = await fetch("/api/session"); // backend must provide this
+        const { loggedIn } = await res.json();
+
+        document.querySelectorAll(".auth-only").forEach(el => el.hidden = !loggedIn);
+        document.querySelectorAll(".guest-only").forEach(el => el.hidden = loggedIn);
+      } catch (e) {
+        console.error("Session check failed", e);
+      }
+    }
+
+    document.addEventListener("click", async (e) => {
+      if (e.target.id === "logoutLink") {
+        e.preventDefault();
+        await fetch("/api/logout", { method: "POST" });
+        location.reload();
+      }
+    });
+
+    refreshNav();
+  </script>
 
     </body>
 
