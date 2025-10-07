@@ -27,48 +27,210 @@
                 <a href="index.html">Home</a>
                 <a href="">Plan Event</a>
                 <a href="interested.html">Interested in Bartending</a>
+                <a href="" class="manager-only" hidden>Manage Bartenders</a>
                 <a href="signin.html" class="guest-only">Sign In</a>
                 <a href="#" id="logoutLink" class="auth-only" hidden>Logout</a>
+                <a href="" class="auth-only" hidden><img src="images/defaultPFP.png" alt="Profile" width="30"></a>
             </nav>
 
         </header>
 
         <main>
             <div id="wrapper">
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="col"></div>
-                        <div class="col">
-                            <div class="info-card" style="width:400px">
-                                <div class="info-card-body">
-                                    <h4 class="info-card-title">Event Tier</h4>
-                                    <div class="row" style="height: 300px; border-top: 4px double lightgrey; border-bottom: 2px solid lightgrey; margin-bottom: 1px;">
-                                        <div class="col-sm-4">Tier 1:</div>
-                                        <div class="col-sm-8">Backyard BBQ</div>
+
+                <!-- EVENT TIERS -->
+                <div class="info-card">
+                    <div class="info-card-header">
+                        <img src="images/event_tier.png" alt="Event Tier" width="175">
+                    </div>
+                    <div class="info-card-cards">
+                        <div class="flip-card">
+                            <div class="flip-card-inner">
+                                <div class="flip-card-front">
+                                    <!-- Content for the front of the card -->
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h5 class="card-title">Teir 1</h5>
+                                            <div class="card-text">
+                                                <img src="images/tier_1.png" alt="Tier 1 image" width="200">
+                                                <p>Click to reveal details.</p>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="row" style="border-top: 2px solid lightgrey; border-bottom: 2px solid lightgrey; margin-bottom: 1px;">
-                                        <div class="col-sm-4">Tier 2:</div>
-                                        <div class="col-sm-8">Graduation</div>
-                                    </div>
-                                    <div class="row" style="border-top: 2px solid lightgrey; border-bottom: 2px solid lightgrey;">
-                                        <div class="col-sm-4">Tier 3:</div>
-                                        <div class="col-sm-8">Wedding</div>
+                                </div>
+                                <div class="flip-card-back">
+                                    <!-- Content for the back of the card -->
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h5 class="card-title"> Tier 1</h5>
+                                            <p class="card-text">Tailored for smaller, this package is 
+                                                ideal for casual events such as backyard barbecues, relaxed cookouts, game nights, or 
+                                                sports viewing parties and provides the perfect balance of convenience and atmosphere.<br><br><br>
+                                                (10-20 Guests)
+                                                 </p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="col"></div>
-                        <div class="col">
-                            <div class="info-card" style="width:400px">
-                                <div class="info-card-body">
-                                    <h4 class="info-card-title">Drink Packages</h4>
-                                    <p class="card-text">Some example text.</p>
+                        
+                        <div class="flip-card">
+                            <div class="flip-card-inner">
+                                <div class="flip-card-front">
+                                    <!-- Content for the front of the card -->
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h5 class="card-title">Teir 2</h5>
+                                            <div class="card-text">
+                                                <img src="images/tier_2.png" alt="Tier 2 image" width="200">
+                                                <p>Click to reveal details.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flip-card-back">
+                                    <!-- Content for the back of the card -->
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h5 class="card-title">Tier 2</h5>
+                                            <p class="card-text">Designed for larger gatherings, this package is ideal for 
+                                                celebrations such as family reunions, graduation parties, or baby showers and 
+                                                provides enhanced support and resources to ensure a seamless experience.<br><br>
+                                                (20-30 Guests)
+                                            </p>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="col"></div>
+
+                        <div class="flip-card">
+                            <div class="flip-card-inner">
+                                <div class="flip-card-front">
+                                    <!-- Content for the front of the card -->
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h5 class="card-title">Tier 3</h5>
+                                            <div class="card-text">
+                                                <img src="images/tier_3.png" alt="Tier 3 image" width="200">
+                                                <p>Click to reveal details.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flip-card-back">
+                                    <!-- Content for the back of the card -->
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h5 class="card-title">Tier 3</h5>
+                                            <p class="card-text">Crafted for the most significant occasions, 
+                                                this package is ideal for large-scale events such as weddings, corporate functions, 
+                                                and community celebrations and delivers comprehensive planning and coordination, 
+                                                ensuring every detail is executed flawlessly.<br><br>
+                                                (31+ Guests)
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
+
+                <br>
+
+                <!-- DRINK PACKAGES -->
+                <div class="info-card">
+                    <div class="info-card-header">
+                        <img src="images/drink_package.png" alt="Drink Package" width="250">
+                    </div>
+
+                    <div class="info-card-cards">
+                        <div class="flip-card">
+                            <div class="flip-card-inner">
+                                <div class="flip-card-front">
+                                    <!-- Content for the front of the card -->
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h5 class="card-title">Wet Bar</h5>
+                                            <div class="card-text">
+                                                <img src="images/wet.png" alt="Wet Bar image" width="200">
+                                                <p>Click to reveal details.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flip-card-back">
+                                    <!-- Content for the back of the card -->
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h5 class="card-title"> Wet Bar</h5>
+                                            <p class="card-text">A simple bar setup offering a selection of domestic and imported beers and wines.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="flip-card">
+                            <div class="flip-card-inner">
+                                <div class="flip-card-front">
+                                    <!-- Content for the front of the card -->
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h5 class="card-title">Cocktail Bar</h5>
+                                            <div class="card-text">
+                                                <img src="images/cocktail.png" alt="Cocktail Bar image" width="200">
+                                                <p>Click to reveal details.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flip-card-back">
+                                    <!-- Content for the back of the card -->
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h5 class="card-title">Cocktail Bar</h5>
+                                            <p class="card-text">A mid-level bar service that provides beer, wine, and up to three specialty 
+                                                cocktails of your choice.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flip-card">
+                            <div class="flip-card-inner">
+                                <div class="flip-card-front">
+                                    <!-- Content for the front of the card -->
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h5 class="card-title">Full Bar</h5>
+                                            <div class="card-text">
+                                                <img src="images/full.png" alt="Full Bar image" width="200">
+                                                <p>Click to reveal details.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flip-card-back">
+                                    <!-- Content for the back of the card -->
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h5 class="card-title">Full Bar</h5>
+                                            <p class="card-text">A full service bar experience offering a range of spirits, mixers, and garnishes. 
+                                                Guests can order from a wide selection of classic and custom cocktails, in addition to beer and wine.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <br>
 
                 <h2>Q&A</h2>
                 <div id="accordion">
@@ -77,7 +239,7 @@
                             What is Bar-Tenders?
                         </div>
                         <div id="collapseOne" class="collapse" data-bs-parent="#accordion">
-                            <div class="card-body">
+                            <div class="qa-card-body">
                                 Bar-Tenders is your hassle-free way to bring the perfect bartender to your event! From cozy backyard parties to unforgettable weddings,
                                 we connect you with friendly, skilled bartenders who serve the perfect drinks to fit your atmosphere.
                                 <br><br>
@@ -93,8 +255,8 @@
                             How do I make a reservation?
                         </div>
                         <div id="collapseTwo" class="collapse" data-bs-parent="#accordion">
-                            <div class="card-body">
-                                Lorem ipsum..
+                            <div class="qa-card-body">
+                                Coming Soon...
                             </div>
                         </div>
                     </div>
@@ -104,8 +266,8 @@
                             How do I become a bartender?
                         </div>
                         <div id="collapseThree" class="collapse" data-bs-parent="#accordion">
-                            <div class="card-body">
-                                Lorem ipsum..
+                            <div class="qa-card-body">
+                                Coming Soon...
                             </div>
                         </div>
                     </div>
@@ -118,18 +280,42 @@
         </footer>
 
   <script>
+    //card flip
+    document.querySelectorAll('.flip-card').forEach(card => {
+        card.addEventListener('click', function() {
+            this.classList.toggle('flipped');
+        });
+    });
+
+    //flip card height
+    document.querySelectorAll('.flip-card').forEach(card => {
+        const front = card.querySelector('.flip-card-front');
+        const back = card.querySelector('.flip-card-back');
+        const inner = card.querySelector('.flip-card-inner');
+
+        const maxHeight = Math.max(front.scrollHeight, back.scrollHeight);
+        inner.style.height = maxHeight + 'px';
+    });
+
+    //dynamic nav bar
     async function refreshNav() {
       try {
         const res = await fetch("/api/session"); // backend must provide this
-        const { loggedIn } = await res.json();
+        const { loggedIn, credentialID } = await res.json();
+
+        console.log("Session Status:", {loggedIn, credentialID});
 
         document.querySelectorAll(".auth-only").forEach(el => el.hidden = !loggedIn);
         document.querySelectorAll(".guest-only").forEach(el => el.hidden = loggedIn);
+        if ( credentialID >= 3 ) {
+            document.querySelectorAll(".manager-only").forEach(el => el.hidden = !loggedIn);
+        }
       } catch (e) {
         console.error("Session check failed", e);
       }
     }
 
+    //logout
     document.addEventListener("click", async (e) => {
       if (e.target.id === "logoutLink") {
         e.preventDefault();
