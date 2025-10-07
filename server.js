@@ -102,7 +102,9 @@ app.post('/login', (req, res) => {
     if (!match) return res.send("Invalid email or password");
 
     req.session.userId = user.userID;
-    res.redirect('/dashboard');
+    req.session.credentialID = user.credentialID;
+    
+    res.redirect('/index.html');
   });
 });
 
@@ -130,6 +132,9 @@ app.listen(PORT, () => {
 
 // Session status endpoint for the navbar
 app.get('/api/session', (req, res) => {
-  res.json({ loggedIn: !!req.session.userId });
+  res.json({ 
+    loggedIn: !!req.session.userId, 
+    credentialID: req.session.credentialID
+  });
 });
 
