@@ -161,3 +161,36 @@ label.required::after {
 #toggleLogInForm:hover {
     color: var(--gold);
 }
+
+/* Sticky footer only for Interested in Bartending page */
+.interested-page {
+  min-height: 100vh;            /* full viewport height */
+  display: flex;
+  flex-direction: column;
+}
+
+.interested-page main {
+  flex: 1;                      /* push footer down */
+}
+
+.interested-page footer {
+  background-color: #f8f8f8;    /* adjust to your theme */
+  text-align: center;
+  padding: 10px;
+}
+
+/* Header colors only for Interested in Bartending page */
+.interested-page h2 {
+  color: #ffffff;  /* dark red for main page header */
+}
+
+.interested-page label {
+  color: #ffffff;  /* dark blue for form labels */
+  font-weight: bold; /* makes them pop */
+}
+
+/* Make the intro paragraph text white */
+.bartender-description {
+  color: white;
+}
+
