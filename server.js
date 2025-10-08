@@ -121,7 +121,8 @@ app.post('/api/logout', (req, res) => {
   req.session.destroy((err) => {
     res.clearCookie("bartenders_session_name");
     if (err) return res.json({ success: false });
-    res.json({ success: true });  });
+    res.json({ success: true, redirect: '/index.html' });  
+  });
 });
 
 

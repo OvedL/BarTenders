@@ -30,7 +30,7 @@
                 <a href="" class="manager-only" hidden>Manage Bartenders</a>
                 <a href="signin.html" class="guest-only">Sign In</a>
                 <a href="#" id="logoutLink" class="auth-only" hidden>Logout</a>
-                <a href="" class="auth-only" hidden><img src="images/defaultPFP.png" alt="Profile" width="30"></a>
+                <a href="profile.html" class="auth-only" hidden><img src="images/defaultPFP.png" alt="Profile" width="30"></a>
             </nav>
 
         </header>
@@ -319,10 +319,17 @@
     document.addEventListener("click", async (e) => {
       if (e.target.id === "logoutLink") {
         e.preventDefault();
-        await fetch("/api/logout", { method: "POST" });
-        location.reload();
+        const res = await fetch("/api/logout", { method: "POST" });
+        const data = await res.json();
+
+        if (data.success) {
+            window.location.href = data.redirect;
+        } else {
+            alert("Logout failed, please try again.");
+        }
       }
     });
+
 
     refreshNav();
   </script>

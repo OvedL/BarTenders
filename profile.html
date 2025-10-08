@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Bar-Tenders</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+        <!--<script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.slim.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>-->
+         <link href="Bar-Tenders.css" rel="stylesheet">
+    </head>
+
+
+    <body>
+
+        <header>
+            <div class="branding">
+                <a href="index.html"><img src="images/logoNoWords.png" alt="Bar-Tenders Logo" width="150" class="logo"></a>
+                <img src="images/title.png" alt="Bar-Tenders" width="300" class="title">
+            </div>
+
+            <nav>
+                <a href="index.html">Home</a>
+                <a href="">Plan Event</a>
+                <a href="">Interested in Bartending</a>
+                <a href="" class="manager-only" hidden>Manage Bartenders</a>
+                <a href="signin.html" class="guest-only">Sign In</a>
+                <a href="#" id="logoutLink" class="auth-only" hidden>Logout</a>
+                <a href="" class="auth-only" hidden><img src="images/defaultPFP.png" alt="Profile" width="30"></a>
+            </nav>
+
+        </header>
+
+        <main>
+            <div id="wrapper">
+                Welcome 
+            </div>
+        </main>
+
+        <footer>
+            &copy; 2025 Bar-Tenders
+        </footer>
+
+  <script>
+    //dynamic nav bar
+    async function refreshNav() {
+      try {
+        const res = await fetch("/api/session"); // backend must provide this
+        const { loggedIn, credentialID } = await res.json();
+
+        console.log("Session Status:", {loggedIn, credentialID});
+
+        document.querySelectorAll(".auth-only").forEach(el => el.hidden = !loggedIn);
+        document.querySelectorAll(".guest-only").forEach(el => el.hidden = loggedIn);
+        if ( credentialID >= 3 ) {
+            document.querySelectorAll(".manager-only").forEach(el => el.hidden = !loggedIn);
+        }
+      } catch (e) {
+        console.error("Session check failed", e);
+      }
+    }
+
+    //logout
+    document.addEventListener("click", async (e) => {
+      if (e.target.id === "logoutLink") {
+        e.preventDefault();
+        const res = await fetch("/api/logout", { method: "POST" });
+        const data = await res.json();
+
+        if (data.success) {
+            window.location.href = data.redirect;
+        } else {
+            alert("Logout failed, please try again.");
+        }
+      }
+    });
+
+    refreshNav();
+  </script>
+
+    </body>
+
+</html>
