@@ -18,9 +18,9 @@ app.use(express.json());
 // MySQL connection pool to allow for more users at the same time
 const dbOptions = {
   host: "sql5.freesqldatabase.com",
-  user: "sql5797996",
-  password: "U5pq16zj2J",
-  database: "sql5797996",
+  user: "sql5803838",
+  password: "8WhTd7sUPJ",
+  database: "sql5803838",
   port: 3306,
   connectionLimit: 10,
   connectTimeout: 10000
