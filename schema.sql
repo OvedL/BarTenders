@@ -26,8 +26,8 @@ CREATE TABLE IF NOT EXISTS BARTENDER (
 );
 
 CREATE TABLE IF NOT EXISTS CREDENTIALS (
-  credentialID INTEGER PRIMARY KEY AUTO_INCREMENT,
-  title VARCHAR(255) NOT NULL,
+  credentialID INTEGER PRIMARY KEY,
+  title VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS USER_INFO (
@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS USER_INFO (
   zipcode       VARCHAR(15),
   bartenderID   INTEGER,           -- nullable: user may or may not be a bartender
   createdAt     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  credentialID  INTEGER NOT NULL,
+  credentialID  INTEGER NOT NULL DEFAULT 1,
   FOREIGN KEY (bartenderID) REFERENCES BARTENDER(bartenderID) ON DELETE SET NULL,
   FOREIGN KEY (credentialID) REFERENCES CREDENTIALS(credentialID) ON DELETE RESTRICT
 );
@@ -85,3 +85,10 @@ CREATE TABLE IF NOT EXISTS REVIEW (
   FOREIGN KEY (bartenderID) REFERENCES BARTENDER(bartenderID)   ON DELETE SET NULL,
   UNIQUE (eventID, reviewerID)   -- prevents duplicate review by same user for event
 );
+
+
+
+INSERT INTO CREDENTIALS (credentialID, title) VALUES (1, 'client');
+INSERT INTO CREDENTIALS (credentialID, title) VALUES (2, 'bartender');
+INSERT INTO CREDENTIALS (credentialID, title) VALUES (3, 'manager');
+INSERT INTO CREDENTIALS (credentialID, title) VALUES (4, 'admin');
