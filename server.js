@@ -11,16 +11,16 @@ const app = express();
 const PORT = 3000;
 
 // Middleware to parse HTML forms and json
-app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 
 // MySQL connection pool to allow for more users at the same time
 const dbOptions = {
   host: "sql5.freesqldatabase.com",
-  user: "sql5803838",
-  password: "8WhTd7sUPJ",
-  database: "sql5803838",
+  user: "sql5804890",
+  password: "2ii6tIe39h",
+  database: "sql5804890",
   port: 3306,
   connectionLimit: 10,
   connectTimeout: 10000
@@ -54,10 +54,6 @@ app.use(session({
   cookie: { maxAge: 1000 * 60 * 60 * 24 }
 
 }));
-
-
-// Serve all static files (HTML, CSS, JS) from current folder
-app.use(express.static(path.join(__dirname)));
 
 
 // Default route to the main page
@@ -139,3 +135,76 @@ app.get('/api/session', (req, res) => {
   });
 });
 
+
+// Return logged-in user's profile info
+app.get('/api/userinfo', (req, res) => {
+  if (!req.session.userId) {
+    return res.status(401).json({ error: "Not logged in" });
+  }
+
+  const query = `
+    SELECT 
+      firstName,
+      lastName,
+      email,
+      phoneNumber,
+      city,
+      state,
+      zipcode,
+      createdAt,
+      credentialID,
+      bartenderID
+    FROM USER_INFO
+    WHERE userID = ?;
+  `;
+
+  db.query(query, [req.session.userId], (err, results) => {
+    if (err) {
+      console.error("Database error fetching user info:", err);
+      return res.status(500).json({ error: "Database error" });
+    }
+
+    if (results.length === 0) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    res.json(results[0]); // send user info as JSON
+  });
+});
+
+//Update User Info
+app.put("/api/userinfo", async (req, res) => {
+  try {
+    const userId = req.session.userId;
+    if (!userId) return res.status(401).json({ error: "Not logged in" });
+
+    const { email, phoneNumber, city, state, zipcode } = req.body || {};
+
+    const updates = [];
+    const values = [];
+
+    if (email !== undefined) { updates.push("email = ?"); values.push(email); }
+    if (phoneNumber !== undefined) { updates.push("phoneNumber = ?"); values.push(phoneNumber); }
+    if (city !== undefined) { updates.push("city = ?"); values.push(city); }
+    if (state !== undefined) { updates.push("state = ?"); values.push(state); }
+    if (zipcode !== undefined) { updates.push("zipcode = ?"); values.push(zipcode); }
+
+    if (updates.length === 0) return res.status(400).json({ error: "No valid fields provided" });
+
+    values.push(userId);
+
+    const sql = `UPDATE USER_INFO SET ${updates.join(", ")} WHERE userID = ?`;
+
+    // Important: use db.promise() on the pool
+    await db.promise().execute(sql, values);
+
+    res.json({ success: true });
+  } catch (err) {
+    console.error("Error updating user info:", err);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+
+// Serve all static files (HTML, CSS, JS) from current folder
+app.use(express.static(path.join(__dirname)));

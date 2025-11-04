@@ -12,6 +12,14 @@
         <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>-->
          <link href="Bar-Tenders.css" rel="stylesheet">
+         <!-- FullCalendar CSS -->
+         <link href="https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.19/main.min.css" rel="stylesheet">
+         <!-- FullCalendar JavaScript -->
+         <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.19/index.global.min.js"></script>
+         <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/daygrid@6.1.19/index.global.min.js"></script>
+         <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/interaction@6.1.19/index.global.min.js"></script>
+
+
     </head>
 
 
@@ -37,7 +45,6 @@
 
         <main>
             <div id="wrapper">
-                Welcome 
             </div>
         </main>
 
@@ -45,42 +52,223 @@
             &copy; 2025 Bar-Tenders
         </footer>
 
-  <script>
-    //dynamic nav bar
-    async function refreshNav() {
-      try {
-        const res = await fetch("/api/session"); // backend must provide this
-        const { loggedIn, credentialID } = await res.json();
+      <script>
+        // --- Refresh the navbar based on session ---
+        async function refreshNav() {
+          try {
+            const res = await fetch("/api/session", { credentials: 'same-origin' });
+            const { loggedIn, credentialID } = await res.json();
 
-        console.log("Session Status:", {loggedIn, credentialID});
-
-        document.querySelectorAll(".auth-only").forEach(el => el.hidden = !loggedIn);
-        document.querySelectorAll(".guest-only").forEach(el => el.hidden = loggedIn);
-        if ( credentialID >= 3 ) {
-            document.querySelectorAll(".manager-only").forEach(el => el.hidden = !loggedIn);
+            document.querySelectorAll(".auth-only").forEach(el => el.hidden = !loggedIn);
+            document.querySelectorAll(".guest-only").forEach(el => el.hidden = loggedIn);
+            if (credentialID >= 3) {
+              document.querySelectorAll(".manager-only").forEach(el => el.hidden = !loggedIn);
+            }
+          } catch (e) {
+            console.error("Session check failed", e);
+          }
         }
-      } catch (e) {
-        console.error("Session check failed", e);
-      }
-    }
 
-    //logout
-    document.addEventListener("click", async (e) => {
-      if (e.target.id === "logoutLink") {
-        e.preventDefault();
-        const res = await fetch("/api/logout", { method: "POST" });
-        const data = await res.json();
+        // --- Toggle edit/view mode with Cancel button, hide Edit button while editing ---
+        function setupEditToggle(viewId, formId, editBtnId, cancelBtnId) {
+          const viewDiv = document.getElementById(viewId);
+          const form = document.getElementById(formId);
+          const editBtn = document.getElementById(editBtnId);
+          const cancelBtn = document.getElementById(cancelBtnId);
 
-        if (data.success) {
-            window.location.href = data.redirect;
-        } else {
-            alert("Logout failed, please try again.");
+          editBtn.addEventListener('click', () => {
+            form.classList.remove('d-none');
+            viewDiv.classList.add('d-none');
+            editBtn.style.display = 'none';
+          });
+
+          cancelBtn.addEventListener('click', () => {
+            form.classList.add('d-none');
+            viewDiv.classList.remove('d-none');
+            editBtn.style.display = 'inline-block';
+          });
         }
-      }
-    });
 
-    refreshNav();
-  </script>
+        // --- Handle form submission to update database (new version) ---
+        async function handleFormUpdate(formId, apiEndpoint, msgId, viewId) {
+          const form = document.getElementById(formId);
+          form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const data = Object.fromEntries(new FormData(form).entries());
+            const msgDiv = document.getElementById(msgId);
+            const viewDiv = document.getElementById(viewId);
+
+            try {
+              const res = await fetch(apiEndpoint, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'same-origin',
+                body: JSON.stringify(data)
+              });
+
+              if (!res.ok) {
+                const result = await res.json();
+                msgDiv.innerHTML = `<span class="text-danger">${result.error || 'Update failed'}</span>`;
+                return;
+              }
+
+              // Fetch updated user info to refresh only the updated field
+              const userRes = await fetch("/api/userinfo", { credentials: 'same-origin' });
+              const user = await userRes.json();
+
+              // Update view with the latest values (keeps other fields intact)
+              viewDiv.innerHTML = Object.entries(user)
+                .filter(([key, _]) => key in data) // only show updated fields
+                .map(([k, v]) => `<p><strong>${k.charAt(0).toUpperCase() + k.slice(1)}:</strong> ${v || 'N/A'}</p>`)
+                .join('');
+
+              msgDiv.innerHTML = '<span class="text-success">Updated successfully!</span>';
+
+              form.classList.add('d-none');
+              viewDiv.classList.remove('d-none');
+              const editBtn = document.querySelector(`#${formId.replace('Form','EditBtn')}`);
+              if (editBtn) editBtn.style.display = 'inline-block';
+            } catch (err) {
+              console.error('Error updating profile:', err);
+              msgDiv.innerHTML = `<span class="text-danger">Update failed due to network error.</span>`;
+            }
+          });
+        }
+
+        // --- Load user profile and render cards dynamically ---
+        async function loadUserProfile() {
+          try {
+            const res = await fetch("/api/userinfo", { credentials: 'same-origin' });
+            if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+            const user = await res.json();
+
+            const wrapper = document.getElementById("wrapper");
+            wrapper.innerHTML = `
+              <div class="profile-container">
+                <h2 class="text-center mb-4">Welcome ${user.firstName}!</h2>
+                <hr>
+                <div class="row g-4">
+                  <div class="col-auto">
+                    <!-- Personal Information Card -->
+                    <div class="card profile-card p-3" id="personalCard">
+                      <h4>Personal Information</h4>
+                      <div id="personalView">
+                        <p><strong>Email:</strong> ${user.email}</p>
+                        <p><strong>Phone:</strong> ${user.phoneNumber || "N/A"}</p>
+                      </div>
+                      <form id="personalForm" class="d-none">
+                        <div class="mb-2">
+                          <label class="form-label">Email</label>
+                          <input type="email" class="form-control" name="email" value="${user.email}">
+                        </div>
+                        <div class="mb-2">
+                          <label class="form-label">Phone</label>
+                          <input type="text" class="form-control" name="phoneNumber" value="${user.phoneNumber || ''}">
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-sm mt-2">Save</button>
+                        <button type="button" class="btn btn-secondary btn-sm mt-2" id="personalCancelBtn">Cancel</button>
+                      </form>
+                      <button class="btn btn-secondary btn-sm mt-2" id="personalEditBtn">Edit</button>
+                      <div id="personalMsg" class="mt-2"></div>
+                    </div>
+
+                    <!-- Location Card -->
+                    <div class="card profile-card p-3" id="locationCard">
+                      <h4>Location</h4>
+                      <div id="locationView">
+                        <p><strong>City:</strong> ${user.city || "N/A"}</p>
+                        <p><strong>State:</strong> ${user.state || "N/A"}</p>
+                        <p><strong>Zipcode:</strong> ${user.zipcode || "N/A"}</p>
+                      </div>
+                      <form id="locationForm" class="d-none">
+                        <div class="mb-2">
+                          <label class="form-label">City</label>
+                          <input type="text" class="form-control" name="city" value="${user.city || ''}">
+                        </div>
+                        <div class="mb-2">
+                          <label class="form-label">State</label>
+                          <input type="text" class="form-control" name="state" value="${user.state || ''}">
+                        </div>
+                        <div class="mb-2">
+                          <label class="form-label">Zipcode</label>
+                          <input type="text" class="form-control" name="zipcode" value="${user.zipcode || ''}">
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-sm mt-2">Save</button>
+                        <button type="button" class="btn btn-secondary btn-sm mt-2" id="locationCancelBtn">Cancel</button>
+                      </form>
+                      <button class="btn btn-secondary btn-sm mt-2" id="locationEditBtn">Edit</button>
+                      <div id="locationMsg" class="mt-2"></div>
+                    </div>
+                  </div>
+
+                  <div class="col">
+                    <!-- Calendar -->
+                    <div id="userCalendar" style="min-height: 400px;"></div>
+                  </div>
+                </div>
+              </div>
+            `;
+
+            // Attach toggles and form handlers
+            setupEditToggle('personalView', 'personalForm', 'personalEditBtn', 'personalCancelBtn');
+            setupEditToggle('locationView', 'locationForm', 'locationEditBtn', 'locationCancelBtn');
+            handleFormUpdate('personalForm', '/api/userinfo', 'personalMsg', 'personalView');
+            handleFormUpdate('locationForm', '/api/userinfo', 'locationMsg', 'locationView');
+
+            // Initialize FullCalendar after the element exists
+            const calendarEl = document.getElementById('userCalendar');
+            if (calendarEl) {
+              const calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                editable: true,
+                selectable: true,
+                height: 'auto',
+                select: function(info) {
+                  const title = prompt('Enter event title:');
+                  if (title) {
+                    calendar.addEvent({
+                      title: title,
+                      start: info.startStr,
+                      end: info.endStr,
+                      allDay: info.allDay
+                    });
+                  }
+                  calendar.unselect();
+                },
+                events: []
+              });
+              calendar.render();
+            }
+
+          } catch (err) {
+            console.error("Error loading user profile:", err);
+            document.getElementById("wrapper").innerHTML = `
+              <p class="text-center mt-4">Unable to load profile information. Please sign in again.</p>
+            `;
+          }
+        }
+
+        // --- Logout button handler ---
+        document.addEventListener("click", async (e) => {
+          if (e.target.id === "logoutLink") {
+            e.preventDefault();
+            const res = await fetch("/api/logout", { method: "POST", credentials: 'same-origin' });
+            const data = await res.json();
+            if (data.success) {
+              window.location.href = data.redirect;
+            } else {
+              alert("Logout failed, please try again.");
+            }
+          }
+        });
+
+        // --- Initialize page ---
+        refreshNav();
+        loadUserProfile();
+
+      </script>
+
+
 
     </body>
 

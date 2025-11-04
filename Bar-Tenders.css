@@ -192,6 +192,30 @@ label.required::after {
     height: 230px;
 }
 
+.profile-container {
+    max-width: 100%;
+    margin: 2rem auto;
+    padding: 2rem;            /* instead of p-4 */
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15); /* shadow-lg replacement */
+    border-radius: 1rem;      /* rounded-4 replacement */
+    background-color: #fff;   /* optional */
+}
+
+.profile-card {
+  border: none;
+  background-color: transparent;
+  box-shadow: none;
+}
+
+.profile-card h2 {
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.profile-card p {
+    margin: 0.5rem 0;
+}
+
 #wrapper {
     width: 95%;
     min-height: 100vh;
@@ -244,6 +268,12 @@ label.required::after {
 
 #toggleLogInForm:hover {
     color: var(--gold);
+}
+
+#userCalendar {
+  max-width: 100%;
+  margin: 0 auto;
+  min-height: 400px;
 }
 
 /* Sticky footer only for Interested in Bartending page */
