@@ -30,7 +30,7 @@
       If you’re interested in bartending, fill out the form below and we’ll be in touch!
     </p>
 
-    <form method="post" action="/apply-bartender" class="mt-4" enctype="multipart/form-data">
+    <form method="post" action="/apply-bartender" class="mt-4">
       <!-- Name -->
       <div class="mb-3">
         <label for="name" class="form-label">Full Name</label>
@@ -49,12 +49,14 @@
         <input type="number" id="years" name="years" class="form-control" placeholder="Enter number of years bartending" min="0" required>
       </div>
 
-      <!-- Picture Upload -->
+      <!-- TO BE ADDED LATER
+       Picture Upload
       <div class="mb-3">
         <label for="picture" class="form-label">Profile Picture</label>
         <input type="file" id="picture" name="picture" class="form-control" accept="image/*">
         <small class="form-text text-muted">You can upload the same picture as your profile image.</small>
       </div>
+      -->
 
       <!-- Summarized Bio -->
       <div class="mb-3">
@@ -64,8 +66,13 @@
 
       <!-- Location -->
       <div class="mb-3">
-        <label for="location" class="form-label">Location</label>
-        <input type="text" id="location" name="location" class="form-control" placeholder="City, State or Region" required>
+        <label for="city" class="form-city">City</label>
+        <input type="text" id="city" name="city" class="form-control" placeholder="City" required>
+      </div>
+
+      <div class="mb-3">
+        <label for="state" class="form-state">State</label>
+        <input type="text" id="state" name="state" class="form-control" placeholder="State" required>
       </div>
 
       <!-- Prior Event Types Worked -->
@@ -85,6 +92,38 @@
 
   <!-- reuse the navbar script for Sign In/Logout toggle -->
   <script>
+    // Run this immediately when the page loads
+    (async function protectPageAndFillForm() {
+      try {
+          // Check session
+          const sessionRes = await fetch("/api/session");
+          const { loggedIn } = await sessionRes.json();
+
+          if (!loggedIn) {
+              window.location.href = "signin.html?redirect=interested.html";
+              return;
+          }
+
+          // Fetch user info
+          const userRes = await fetch("/api/userinfo");
+          if (!userRes.ok) throw new Error("Failed to fetch user info");
+          const user = await userRes.json();
+
+          // Replace the Name and Email fields with static text
+          const nameDiv = document.querySelector("#name").parentElement;
+          const emailDiv = document.querySelector("#email").parentElement;
+
+          nameDiv.innerHTML = `<label class="form-label">Full Name</label><p>${user.firstName} ${user.lastName}</p>`;
+          emailDiv.innerHTML = `<label class="form-label">Email</label><p>${user.email}</p>`;
+
+      } catch (err) {
+          console.error("Error filling form:", err);
+          // Optional: redirect to signin if fetching user info fails
+          window.location.href = "signin.html?redirect=interested.html";
+      }
+    })();
+
+    // This part updates navbar + handles logout
     async function refreshNav() {
       try {
         const res = await fetch("/api/session");
@@ -93,6 +132,7 @@
         document.querySelectorAll(".guest-only").forEach(el => el.hidden = loggedIn);
       } catch (e) { console.error(e); }
     }
+
     document.addEventListener("click", async (e) => {
       if (e.target.id === "logoutLink") {
         e.preventDefault();
@@ -100,7 +140,37 @@
         location.reload();
       }
     });
+
     refreshNav();
+
+    document.querySelector("form[action='/apply-bartender']").addEventListener("submit", async function(e) {
+      e.preventDefault();
+
+      const data = new URLSearchParams(new FormData(this));
+
+      try {
+        const res = await fetch("/apply-bartender", {
+          method: "POST",
+          body: data,
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          credentials: "include"
+        });
+
+        const result = await res.json();
+
+        if (result.success) {
+          alert(result.message); // Show success popup
+          window.location.href = "/index.html"; // Redirect to home page
+        } else {
+          alert("Error: " + result.message);
+        }
+      } catch (err) {
+        console.error(err);
+        alert("Server error. Please try again later.");
+      }
+    });
+
   </script>
+
 </body>
 </html>
