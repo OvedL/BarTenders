@@ -205,8 +205,7 @@ app.get('/api/userinfo', (req, res) => {
       state,
       zipcode,
       createdAt,
-      credentialID,
-      bartenderID
+      credentialID
     FROM USER_INFO
     WHERE userID = ?;
   `;
@@ -256,6 +255,35 @@ app.put("/api/userinfo", async (req, res) => {
     console.error("Error updating user info:", err);
     res.status(500).json({ error: "Server error" });
   }
+});
+
+// Send Interested in Bartending Form
+app.post("/apply-bartender", (req, res) => {
+  if (!req.session.userId) {
+    return res.status(401).json({ success: false, message: "Not logged in" });
+  }
+
+  const userID = req.session.userId;
+  const { years, bio, city, state, priorEvents } = req.body;
+
+  if (!years || !bio || !city || !state || !priorEvents) {
+    return res.status(400).json({ success: false, message: "All fields are required" });
+  }
+
+  const query = `
+    INSERT INTO BARTENDER (yearsOfService, bio, city, state, priorEvents, userID)
+    VALUES (?, ?, ?, ?, ?, ?)
+  `;
+
+  db.query(query, [years, bio, city, state, priorEvents, userID], (err) => {
+    if (err) {
+      console.error("Database insert error:", err);
+      return res.status(500).json({ success: false, message: "Database error" });
+    }
+
+    // Respond with JSON success message
+    res.json({ success: true, message: "Application submitted successfully!" });
+  });
 });
 
 

@@ -45,70 +45,100 @@
             const signInBox = document.getElementById('signInBox');
             let isSignIn = true;
 
+            // --- Render Sign In Form ---
             function renderSignInForm() {
                 signInBox.innerHTML = `
-                    <img src="images/sign_in.png" alt="Sign In" width="150px" height="60xp" class="signInPageImage">
+                    <img src="images/sign_in.png" alt="Sign In" width="150px" height="60px" class="signInPageImage">
                     <p style="text-align: center;">Welcome back! Whether you're throwing <br>the party or bringing it, sign in here.</p>
-                    <form method="post" action="/login">
+                    <form id="loginForm">
                         <label for="email"><b>Email</b></label>
-                        <input type="email" id="email" name="email"><br><br>
+                        <input type="email" id="email" name="email" required><br><br>
 
                         <label for="password"><b>Password</b></label>
-                        <input type="password" id="password" name="password"><br><br>
+                        <input type="password" id="password" name="password" required><br><br>
 
                         <button type="submit">Sign In</button>
                     </form>
                     <a href="#" id="toggleLogInForm">Don't have an account? Sign up here.</a>
                 `;
-                const toggleLink = document.getElementById('toggleLogInForm');
-                toggleLink.addEventListener('click', toggleFormFunction);
+
+                // Handle form submission
+                document.getElementById("loginForm").addEventListener("submit", async (e) => {
+                    e.preventDefault();
+
+                    const email = document.getElementById("email").value.trim();
+                    const password = document.getElementById("password").value;
+
+                    try {
+                        const res = await fetch("/login", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ email, password }),
+                            credentials: "include" // important for session cookies
+                        });
+
+                        if (res.ok) {
+                            // Redirect to original page or index.html
+                            const params = new URLSearchParams(window.location.search);
+                            const redirect = params.get("redirect") || "index.html";
+                            window.location.href = redirect;
+                        } else {
+                            const text = await res.text();
+                            alert(text || "Invalid email or password.");
+                        }
+                    } catch (err) {
+                        console.error(err);
+                        alert("Server error. Please try again.");
+                    }
+                });
+
+                document.getElementById('toggleLogInForm').addEventListener('click', toggleFormFunction);
             }
 
+            // --- Render Sign Up Form ---
             function renderSignUpForm() {
                 signInBox.innerHTML = `
                     <img src="images/create_account.png" alt="Create Account" width="300px" height="60px" class="signInPageImage">
                     <p style="text-align: center;">Enter your information</p>
                     <form method="post" action="/signup">
-                        <label for="firstName" class="required"><b>First Name</b></label><br>
-                        <input type="text" id="firstName" name="firstName" required> <br><br>
+                        <label><b>First Name</b></label><br>
+                        <input type="text" name="firstName" required><br><br>
 
-                        <label for="lastName" class="required"><b>Last Name</b></label><br>
-                        <input type="text" id="lastName" name="lastName" required> <br><br>
+                        <label><b>Last Name</b></label><br>
+                        <input type="text" name="lastName" required><br><br>
 
-                        <label for="email" class="required"><b>Email</b></label><br>
-                        <input type="email" id="email" name="email" required> <br><br>
+                        <label><b>Email</b></label><br>
+                        <input type="email" name="email" required><br><br>
 
-                        <label for="phoneNumber" class="required"><b>Phone Number</b></label><br>
-                        <input type="tel" id="phoneNumber" name="phoneNumber" required> <br><br>
+                        <label><b>Phone Number</b></label><br>
+                        <input type="tel" name="phoneNumber" required><br><br>
 
-                        <label for="password" class="required"><b>Password</b></label><br>
-                        <input type="password" id="password" name="password" required> <br><br>
+                        <label><b>Password</b></label><br>
+                        <input type="password" name="password" required><br><br>
 
-                        <label for="confirmPassword" class="required"><b>Confirm Password</b></label><br>
-                        <input type="password" id="confirmPassword" name="confirmPassword" required> <br><br>
+                        <label><b>Confirm Password</b></label><br>
+                        <input type="password" name="confirmPassword" required><br><br>
 
                         <button type="submit">Sign Up</button>
                     </form>
                     <a href="#" id="toggleLogInForm">Already have an account? Sign in here.</a>
                 `;
-                const toggleLink = document.getElementById('toggleLogInForm');
-                toggleLink.addEventListener('click', toggleFormFunction);
+
+                document.getElementById('toggleLogInForm').addEventListener('click', toggleFormFunction);
             }
 
+            // --- Toggle Between Sign In and Sign Up ---
             function toggleFormFunction(e) {
                 e.preventDefault();
-                if (isSignIn) {
-                    renderSignUpForm();
-                } else {
-                    renderSignInForm();
-                }
+                isSignIn ? renderSignUpForm() : renderSignInForm();
                 isSignIn = !isSignIn;
             }
 
-            // Initial render
+            // --- Initial Render ---
             renderSignInForm();
-
         </script>
+
+
 
     </body>
 
