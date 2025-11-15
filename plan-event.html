@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Plan Event • Bar-Tenders</title>
-  <link rel="stylesheet" href="/styles.css" />
+  <link href="Bar-Tenders.css" rel="stylesheet">
   <style>
     /* Minimal, neutral styling (works even if styles.css is missing) */
     :root { --brand:#7a0b25; --paper:#f7f3e3; --ink:#222; }
@@ -41,8 +41,13 @@
           <a href="interested.html">Interested in Bartending</a>
           <a href="manage_bartenders.html" class="manager-only" hidden>Manage Bartenders</a>
           <a href="signin.html" class="guest-only">Sign In</a>
-          <a href="#" id="logoutLink" class="auth-only" hidden>Logout</a>
-          <a href="profile.html" class="auth-only" hidden><img src="images/defaultPFP.png" alt="Profile" width="30"></a>
+          <div class="profile-dropdown auth-only" hidden>
+              <img src="images/defaultPFP.png" alt="Profile" width="30" class="profile-btn">
+              <div class="dropdown-content">
+                  <a href="profile.html">Profile</a>
+                  <a href="#" id="logoutLink">Logout</a>
+              </div>
+          </div>
       </nav>
 
   </header>
@@ -179,5 +184,42 @@
       </section>
     </form>
   </main>
+  <script>
+    //dynamic nav bar
+    async function refreshNav() {
+      try {
+        const res = await fetch("/api/session"); // backend must provide this
+        const { loggedIn, credentialID } = await res.json();
+
+        console.log("Session Status:", {loggedIn, credentialID});
+
+        document.querySelectorAll(".auth-only").forEach(el => el.hidden = !loggedIn);
+        document.querySelectorAll(".guest-only").forEach(el => el.hidden = loggedIn);
+        if ( credentialID >= 3 ) {
+            document.querySelectorAll(".manager-only").forEach(el => el.hidden = !loggedIn);
+        }
+      } catch (e) {
+        console.error("Session check failed", e);
+      }
+    }
+
+     //logout
+    document.addEventListener("click", async (e) => {
+      if (e.target.id === "logoutLink") {
+        e.preventDefault();
+        const res = await fetch("/api/logout", { method: "POST" });
+        const data = await res.json();
+
+        if (data.success) {
+            window.location.href = data.redirect;
+        } else {
+            alert("Logout failed, please try again.");
+        }
+      }
+    });
+
+
+    refreshNav();
+  </script>
 </body>
 </html>

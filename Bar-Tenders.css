@@ -35,7 +35,7 @@ nav a {
     border: 2px double transparent;
     border-radius: 6px;
     font-weight: bold;
-    font-size: 1rem; /* base size for smaller screens */
+    font-size: 0.7rem; /* base size for smaller screens */
     transition: all 0.3s ease;
 }
 nav a:hover {
@@ -214,6 +214,45 @@ label.required::after {
 
 .profile-card p {
     margin: 0.5rem 0;
+}
+
+/* Container for profile dropdown */
+.profile-dropdown {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+}
+
+/* Dropdown menu hidden by default */
+.dropdown-content {
+    display: none;
+    position: absolute;
+    top: 35px; /* below the profile image */
+    right: 0;
+    background-color: var(--off-white);
+    min-width: 100px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    z-index: 100;
+}
+
+/* Style for links inside dropdown */
+.dropdown-content a {
+    display: block;
+    padding: 8px 12px;
+    text-decoration: none;
+    color: var(--black);
+}
+
+.dropdown-content a:hover {
+    background-color: var(--gold);
+    color: var(--white)
+}
+
+/* Show dropdown on hover */
+.profile-dropdown:hover .dropdown-content {
+    display: block;
 }
 
 #wrapper {
