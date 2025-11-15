@@ -37,8 +37,13 @@
                 <a href="interested.html">Interested in Bartending</a>
                 <a href="manage_bartenders.html" class="manager-only" hidden>Manage Bartenders</a>
                 <a href="signin.html" class="guest-only">Sign In</a>
-                <a href="#" id="logoutLink" class="auth-only" hidden>Logout</a>
-                <a href="profile.html" class="auth-only" hidden><img src="images/defaultPFP.png" alt="Profile" width="30"></a>
+                <div class="profile-dropdown auth-only" hidden>
+                    <img src="images/defaultPFP.png" alt="Profile" width="30" class="profile-btn">
+                    <div class="dropdown-content">
+                        <a href="profile.html">Profile</a>
+                        <a href="#" id="logoutLink">Logout</a>
+                    </div>
+                </div>
             </nav>
 
         </header>
