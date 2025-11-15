@@ -25,9 +25,9 @@
 
             <nav>
                 <a href="index.html">Home</a>
-                  <a href="plan-event.html">Plan Event</a>
+                <a href="plan-event.html">Plan Event</a>
                 <a href="interested.html">Interested in Bartending</a>
-                <a href="" class="manager-only" hidden>Manage Bartenders</a>
+                <a href="manage_bartenders.html" class="manager-only" hidden>Manage Bartenders</a>
                 <a href="signin.html" class="guest-only">Sign In</a>
                 <a href="#" id="logoutLink" class="auth-only" hidden>Logout</a>
                 <a href="profile.html" class="auth-only" hidden><img src="images/defaultPFP.png" alt="Profile" width="30"></a>
@@ -36,8 +36,24 @@
         </header>
 
         <main>
-            <div id="wrapper">
-                testing to see what happens
+            <div id="wrapper" class="container mt-4">
+                <div class="row">
+
+                    <!-- Left: List of bartenders -->
+                    <div class="col-2">
+                        <h4>Bartenders</h4>
+                        <ul id="bartenderList" class="list-group"></ul>
+                    </div>
+
+                    <!-- Right: Details panel -->
+                    <div class="col-10">
+                        <h4>Details</h4>
+                        <div id="bartenderDetails" class="border rounded p-3 bg-light">
+                            <p>Select a bartender from the list.</p>
+                        </div>
+                    </div>
+
+                </div>
             </div>    
         </main>
 
@@ -79,8 +95,61 @@
             }
             });
 
+            async function loadBartenders() {
+                try {
+                    const res = await fetch("/api/bartenders");
+                    const data = await res.json();
+
+                    if (!data.success) {
+                        document.getElementById("bartenderList").innerHTML =
+                            "<li class='list-group-item'>Failed to load bartenders.</li>";
+                        return;
+                    }
+
+                    const list = document.getElementById("bartenderList");
+
+                    list.innerHTML = ""; // clear
+
+                    data.bartenders.forEach((b, index) => {
+                        const li = document.createElement("li");
+                        li.className = "list-group-item list-group-item-action";
+                        li.style.cursor = "pointer";
+
+                        li.textContent = `${b.fullName}`;
+
+                        // Store data onto the element
+                        li.addEventListener("click", () => showDetails(b));
+
+                        list.appendChild(li);
+                    });
+
+                } catch (err) {
+                    console.error(err);
+                    document.getElementById("bartenderList").innerHTML =
+                        "<li class='list-group-item'>Error loading bartenders.</li>";
+                }
+            }
+
+            function showDetails(b) {
+                const panel = document.getElementById("bartenderDetails");
+
+                panel.innerHTML = `
+                    <h5>${b.fullName}</h5>
+                    <p><strong>Phone:</strong> ${b.phoneNumber}</p>
+                    <p><strong>Email:</strong> ${b.email}</p>
+                    <p><strong>Years of Service:</strong> ${b.yearsOfService}</p>
+                    <p><strong>Bio:</strong> ${b.bio || "N/A"}</p>
+                    <p><strong>Prior Events:</strong> ${b.priorEvents || "N/A"}</p>
+                    <p><strong>Location:</strong> ${b.city}, ${b.state}</p>
+                `;
+            }
+
+
+
+
 
             refreshNav();
+            loadBartenders();
         </script>
 
     </body>
