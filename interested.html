@@ -16,10 +16,12 @@
 
     <nav>
       <a href="index.html">Home</a>
-      <a href="plan.html">Plan Event</a>
+      <a href="plan-event.html">Plan Event</a>
       <a href="interested.html">Interested in Bartending</a>
+      <a href="manage_bartenders.html" class="manager-only" hidden>Manage Bartenders</a>
       <a href="signin.html" class="guest-only">Sign In</a>
       <a href="#" id="logoutLink" class="auth-only" hidden>Logout</a>
+      <a href="profile.html" class="auth-only" hidden><img src="images/defaultPFP.png" alt="Profile" width="30"></a>
     </nav>
   </header>
 
@@ -123,15 +125,30 @@
       }
     })();
 
-    // This part updates navbar + handles logout
+    // updates navbar, handles auth/guest links, manager links, and logs session
     async function refreshNav() {
-      try {
-        const res = await fetch("/api/session");
-        const { loggedIn } = await res.json();
-        document.querySelectorAll(".auth-only").forEach(el => el.hidden = !loggedIn);
-        document.querySelectorAll(".guest-only").forEach(el => el.hidden = loggedIn);
-      } catch (e) { console.error(e); }
+        try {
+            const res = await fetch("/api/session");
+            const { loggedIn, credentialID } = await res.json();
+
+            console.log("Session Status:", { loggedIn, credentialID });
+
+            // Show/hide links based on login status
+            document.querySelectorAll(".auth-only").forEach(el => el.hidden = !loggedIn);
+            document.querySelectorAll(".guest-only").forEach(el => el.hidden = loggedIn);
+
+            // Show manager-only links if user has sufficient credentials
+            if (loggedIn && credentialID >= 3) {
+                document.querySelectorAll(".manager-only").forEach(el => el.hidden = false);
+            } else {
+                document.querySelectorAll(".manager-only").forEach(el => el.hidden = true);
+            }
+
+        } catch (e) {
+            console.error("Session check failed", e);
+        }
     }
+
 
     document.addEventListener("click", async (e) => {
       if (e.target.id === "logoutLink") {

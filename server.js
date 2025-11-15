@@ -286,6 +286,31 @@ app.post("/apply-bartender", (req, res) => {
   });
 });
 
+// Get all bartenders from database
+app.get("/api/bartenders", async (req, res) => {
+    try {
+        const [rows] = await db.promise().query(`
+            SELECT 
+              CONCAT(u.firstName, ' ', u.lastName) AS fullName, 
+              b.yearsOfService,
+              b.bio,
+              b.priorEvents,
+              b.city,
+              b.state,
+              u.phoneNumber,
+              u.email 
+            FROM BARTENDER b 
+            JOIN USER_INFO u USING (userID)
+            ORDER BY b.createdAt DESC;
+        `);
+
+        res.json({ success: true, bartenders: rows });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: "Database error." });
+    }
+});
+
 
 // Serve all static files (HTML, CSS, JS) from current folder
 app.use(express.static(path.join(__dirname)));

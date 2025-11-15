@@ -30,10 +30,25 @@
 </head>
 <body>
   <header>
-    <h1>Plan Your Event</h1>
+      <div class="branding">
+          <a href="index.html"><img src="images/logoNoWords.png" alt="Bar-Tenders Logo" width="150" class="logo"></a>
+          <img src="images/title.png" alt="Bar-Tenders" width="300" class="title">
+      </div>
+
+      <nav>
+          <a href="index.html">Home</a>
+          <a href="plan-event.html">Plan Event</a>
+          <a href="interested.html">Interested in Bartending</a>
+          <a href="manage_bartenders.html" class="manager-only" hidden>Manage Bartenders</a>
+          <a href="signin.html" class="guest-only">Sign In</a>
+          <a href="#" id="logoutLink" class="auth-only" hidden>Logout</a>
+          <a href="profile.html" class="auth-only" hidden><img src="images/defaultPFP.png" alt="Profile" width="30"></a>
+      </nav>
+
   </header>
 
   <main>
+    <h1>Plan Your Event</h1>
     <form action="/plan-event" method="POST" class="grid">
       <!-- Event Details -->
       <section class="card col-12">
