@@ -50,6 +50,7 @@ CREATE TABLE IF NOT EXISTS BARTENDER (
 CREATE TABLE IF NOT EXISTS VENUE (
   venueID     INTEGER PRIMARY KEY AUTO_INCREMENT,
   venueName   VARCHAR(255) NOT NULL,
+  venueType   VARCHAR(255),
   street      VARCHAR(255),
   city        VARCHAR(30),
   state       VARCHAR(30),
@@ -57,16 +58,27 @@ CREATE TABLE IF NOT EXISTS VENUE (
 );
 
 CREATE TABLE IF NOT EXISTS EVENT_INFO (
-  eventID       INTEGER PRIMARY KEY AUTO_INCREMENT,
-  eventDate     DATE NOT NULL,         -- or store only start/end as timestamps
-  startTime     DATETIME NOT NULL,
-  endTime       DATETIME NOT NULL,
-  eventTier     VARCHAR(50),                  -- free VARCHAR(255) or use a lookup later
-  drinkPackage  VARCHAR(50),                  -- free VARCHAR(255) or use a lookup later
-  userID        INTEGER NOT NULL,      -- client/organizer
-  bartenderID   INTEGER,               -- assigned bartender (optional at first)
-  venueID       INTEGER,               -- optional
-  createdAt     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  eventID         INTEGER PRIMARY KEY AUTO_INCREMENT,
+  eventName       VARCHAR(100),  
+  guestCount      INTEGER,
+  eventDate       DATE NOT NULL,         -- or store only start/end as timestamps
+  startTime       TIME NOT NULL,
+  endTime         TIME NOT NULL,
+  eventTier       VARCHAR(50),                  -- free VARCHAR(255) or use a lookup later
+  drinkPackage    VARCHAR(50),                  -- free VARCHAR(255) or use a lookup later
+  budget          DECIMAL,
+  numOfBartenders INTEGER,
+  glassware       VARCHAR(255),
+  cooling         VARCHAR(255),
+  sigCocktail     VARCHAR(255),
+  notes           LONGTEXT,
+  fullName        VARCHAR(255),
+  phoneNumber   VARCHAR(15),
+  email         VARCHAR(255),
+  userID          INTEGER NOT NULL,      -- client/organizer
+  bartenderID     INTEGER,               -- assigned bartender (optional at first)
+  venueID         INTEGER,               -- optional
+  createdAt       TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (userID)      REFERENCES USER_INFO(userID)        ON DELETE CASCADE,
   FOREIGN KEY (bartenderID) REFERENCES BARTENDER(bartenderID) ON DELETE SET NULL,
   FOREIGN KEY (venueID)     REFERENCES VENUE(venueID)      ON DELETE SET NULL
