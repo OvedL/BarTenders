@@ -111,7 +111,6 @@ app.get('/dashboard', (req, res) => {
   res.send(`Welcome! You are logged in as user ID ${req.session.userId}`);
 });
 
-
 // Logout
 app.post('/api/logout', (req, res) => {
   req.session.destroy((err) => {
@@ -120,60 +119,6 @@ app.post('/api/logout', (req, res) => {
     res.json({ success: true, redirect: '/index.html' });  
   });
 });
-
-// === Plan Event Route ===
-app.post('/plan-event', (req, res) => {
-  console.log('New Plan Event request:', req.body);
-
-  const sql = `
-    INSERT INTO event_requests
-    (event_name, guest_count, event_date, start_time, end_time, venue_name, venue_type,
-     event_tier, drink_package, budget, bartender_count, glassware, ice_mgmt,
-     signature_cocktail, notes, full_name, phone, email)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `;
-
-  const vals = [
-    req.body.event_name || null,
-    req.body.guest_count || null,
-    req.body.event_date || null,
-    req.body.start_time || null,
-    req.body.end_time || null,
-    req.body.venue_name || null,
-    req.body.venue_type || null,
-    req.body.event_tier || null,
-    req.body.drink_package || null,
-    req.body.budget || null,
-    req.body.bartender_count || null,
-    req.body.glassware || null,
-    req.body.ice_mgmt || null,
-    req.body.signature_cocktail || null,
-    req.body.notes || null,
-    req.body.full_name || null,
-    req.body.phone || null,
-    req.body.email || null
-  ];
-
-  db.query(sql, vals, (err) => {
-    if (err) {
-      console.error('DB insert error:', err);
-      return res.status(500).send('Database error: ' + err.message);
-    }
-
-    res.send(`
-      <html>
-        <head><meta charset="UTF-8"><title>Request received</title></head>
-        <body style="font-family:Arial; padding:24px;">
-          <h1>Thanks! 🎉</h1>
-          <p>We received your event request for <b>${req.body.event_name || 'your event'}</b>.</p>
-          <p>We’ll reach out to <b>${req.body.email}</b> shortly.</p>
-          <p><a href="/plan-event.html">Back to form</a> • <a href="/index.html">Home</a></p>
-        </body>
-      </html>
-    `);
-  });
-});
-
 
 // Start server
 app.listen(PORT, () => {
@@ -187,7 +132,6 @@ app.get('/api/session', (req, res) => {
     credentialID: req.session.credentialID
   });
 });
-
 
 // Return logged-in user's profile info
 app.get('/api/userinfo', (req, res) => {
@@ -285,6 +229,59 @@ app.post("/apply-bartender", (req, res) => {
     res.json({ success: true, message: "Application submitted successfully!" });
   });
 });
+
+// Send Plan Event Form
+app.post("/apply-event", (req, res) => {
+  const userID = req.session.userId;
+
+  if (!userID) {
+    return res.status(401).json({ success: false, message: "Not logged in" });
+  }
+
+  const {
+    event_name, guest_count, event_date, start_time, end_time,
+    venue_name, venue_type, event_tier, drink_package, budget,
+    bartender_count, glassware, ice_mgmt, signature_cocktail,
+    notes, full_name, phone, email
+  } = req.body;
+
+  const queryEvent = `
+    INSERT INTO EVENT_INFO (
+      eventName, guestCount, eventDate, startTime, endTime,
+      eventTier, drinkPackage, budget, numOfBartenders,
+      glassware, cooling, sigCocktail, notes,
+      fullName, phoneNumber, email, userID
+    )
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `;
+
+  const queryVenue = `
+    INSERT INTO VENUE (venueName, venueType)
+    VALUES (?, ?)
+  `;
+
+  db.query(queryEvent, [
+    event_name, guest_count, event_date, start_time, end_time,
+    event_tier, drink_package, budget, bartender_count,
+    glassware, ice_mgmt, signature_cocktail, notes,
+    full_name, phone, email, userID
+  ], (err) => {
+    if (err) {
+      console.error("Database insert error (EVENT_INFO):", err.sqlMessage);
+      return res.status(500).json({ success: false, message: err.sqlMessage });
+    }
+
+    db.query(queryVenue, [venue_name, venue_type], (err) => {
+      if (err) {
+        console.error("Database insert error (VENUE):", err.sqlMessage);
+        return res.status(500).json({ success: false, message: err.sqlMessage });
+      }
+
+      res.json({ success: true, message: "Event and Venue submitted successfully!" });
+    });
+  });
+});
+
 
 // Get all bartenders from database
 app.get("/api/bartenders", async (req, res) => {

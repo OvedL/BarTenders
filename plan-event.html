@@ -54,7 +54,7 @@
 
   <main>
     <h1>Plan Your Event</h1>
-    <form action="/plan-event" method="POST" class="grid">
+    <form action="/apply-event" method="POST" class="grid">
       <!-- Event Details -->
       <section class="card col-12">
         <h2 class="section-title">Event Details</h2>
@@ -185,6 +185,38 @@
     </form>
   </main>
   <script>
+
+    (async function protectPageAndFillForm() {
+      try {
+          // Check session
+          const sessionRes = await fetch("/api/session");
+          const { loggedIn } = await sessionRes.json();
+
+          if (!loggedIn) {
+              window.location.href = "signin.html?redirect=plan-event.html";
+              return;
+          }
+
+          // Fetch user info
+          const userRes = await fetch("/api/userinfo");
+          if (!userRes.ok) throw new Error("Failed to fetch user info");
+          const user = await userRes.json();
+
+          // Add user field for form submission
+          const form = document.querySelector("form[action='/apply-event']");
+          const userIdInput = document.createElement("input");
+          userIdInput.type = "hidden";
+          userIdInput.name = "userID";
+          userIdInput.value = user.userID;
+          form.appendChild(userIdInput);
+
+      } catch (err) {
+          console.error("Error filling form:", err);
+          // Optional: redirect to signin if fetching user info fails
+          window.location.href = "signin.html?redirect=plan-event.html";
+      }
+    })();
+
     //dynamic nav bar
     async function refreshNav() {
       try {
@@ -218,8 +250,34 @@
       }
     });
 
-
     refreshNav();
+
+    document.querySelector("form[action='/apply-event']").addEventListener("submit", async function(e) {
+      e.preventDefault();
+
+      const data = new URLSearchParams(new FormData(this));
+
+      try {
+        const res = await fetch("/apply-event", {
+          method: "POST",
+          body: data,
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          credentials: "include"
+        });
+
+        const result = await res.json();
+
+        if (result.success) {
+          alert(result.message); // Show success popup
+          window.location.href = "/index.html"; // Redirect to home page
+        } else {
+          alert("Error: " + result.message);
+        }
+      } catch (err) {
+        console.error(err);
+        alert("Server error. Please try again later.");
+      }
+    });
   </script>
 </body>
 </html>
