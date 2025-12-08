@@ -295,7 +295,9 @@ app.get("/api/bartenders", async (req, res) => {
               b.city,
               b.state,
               u.phoneNumber,
-              u.email 
+              u.email,
+              b.active,
+              b.bartenderID
             FROM BARTENDER b 
             JOIN USER_INFO u USING (userID)
             ORDER BY b.createdAt DESC;
@@ -307,6 +309,48 @@ app.get("/api/bartenders", async (req, res) => {
         res.status(500).json({ success: false, message: "Database error." });
     }
 });
+
+// Approve Bartender Request
+app.post("/api/bartenders/approve", async (req, res) => {
+  try {
+    const { bartenderID } = req.body;
+    if (!bartenderID) return res.status(400).json({ success: false, message: "Missing bartenderID" });
+
+    const sql = "UPDATE BARTENDER SET active = 1 WHERE bartenderID = ?";
+    const [result] = await db.promise().execute(sql, [bartenderID]);
+
+    if (result.affectedRows === 1) {
+      return res.json({ success: true });
+    } else {
+      return res.status(404).json({ success: false, message: "Bartender not found" });
+    }
+
+  } catch (err) {
+    console.error("Error approving bartender:", err);
+    return res.status(500).json({ success: false, message: "Server error" });
+  }
+});
+
+// Decline Bartender Request
+app.post("/api/bartenders/decline", async (req, res) => {
+  try {
+    const { bartenderID } = req.body;
+    if (!bartenderID) return res.status(400).json({ success: false, message: "Missing bartenderID" });
+
+    const sql = "UPDATE BARTENDER SET active = 2 WHERE bartenderID = ?";
+    const [result] = await db.promise().execute(sql, [bartenderID]);
+
+    if (result.affectedRows === 1) {
+      return res.json({ success: true });
+    } else {
+      return res.status(404).json({ success: false, message: "Bartender not found" });
+    }
+  } catch (err) {
+    console.error("Error declining bartender:", err);
+    return res.status(500).json({ success: false, message: "Server error" });
+  }
+});
+
 
 
 // Serve all static files (HTML, CSS, JS) from current folder

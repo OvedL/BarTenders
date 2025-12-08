@@ -100,6 +100,7 @@
             }
             });
 
+            //load bartenders' information
             async function loadBartenders() {
                 try {
                     const res = await fetch("/api/bartenders");
@@ -112,20 +113,42 @@
                     }
 
                     const list = document.getElementById("bartenderList");
+                    list.innerHTML = ""; // Clear the list
 
-                    list.innerHTML = ""; // clear
+                    // --- Group Title: Request ---
+                    const requestTitle = document.createElement("li");
+                    requestTitle.className = "list-group-item bartender-status";
+                    requestTitle.textContent = "Request";
+                    list.appendChild(requestTitle);
 
-                    data.bartenders.forEach((b, index) => {
+                    const requestGroup = document.createElement("ul");
+                    requestGroup.className = "list-group mb-3 scrollable-group";
+                    list.appendChild(requestGroup);
+
+                    // --- Group Title: Active ---
+                    const activeTitle = document.createElement("li");
+                    activeTitle.className = "list-group-item bartender-status";
+                    activeTitle.textContent = "Active";
+                    list.appendChild(activeTitle);
+
+                    const activeGroup = document.createElement("ul");
+                    activeGroup.className = "list-group scrollable-group";
+                    list.appendChild(activeGroup);
+
+                    // --- Split bartenders by active value ---
+                    data.bartenders.forEach(b => {
                         const li = document.createElement("li");
                         li.className = "list-group-item list-group-item-action";
                         li.style.cursor = "pointer";
+                        li.textContent = b.fullName;
 
-                        li.textContent = `${b.fullName}`;
-
-                        // Store data onto the element
                         li.addEventListener("click", () => showDetails(b));
 
-                        list.appendChild(li);
+                        if (b.active === 0) {
+                            requestGroup.appendChild(li);
+                        } else if (b.active === 1) {
+                            activeGroup.appendChild(li);
+                        }
                     });
 
                 } catch (err) {
@@ -135,20 +158,85 @@
                 }
             }
 
+
             function showDetails(b) {
                 const panel = document.getElementById("bartenderDetails");
+                const isActive = Number(b.active);
 
                 panel.innerHTML = `
                     <h5>${b.fullName}</h5>
-                    <p><strong>Phone:</strong> ${b.phoneNumber}</p>
-                    <p><strong>Email:</strong> ${b.email}</p>
-                    <p><strong>Years of Service:</strong> ${b.yearsOfService}</p>
+                    <p><strong>Phone:</strong> ${b.phoneNumber || "N/A"}</p>
+                    <p><strong>Email:</strong> ${b.email || "N/A"}</p>
+                    <p><strong>Years of Service:</strong> ${b.yearsOfService || "N/A"}</p>
                     <p><strong>Bio:</strong> ${b.bio || "N/A"}</p>
                     <p><strong>Prior Events:</strong> ${b.priorEvents || "N/A"}</p>
-                    <p><strong>Location:</strong> ${b.city}, ${b.state}</p>
+                    <p><strong>Location:</strong> ${b.city || "N/A"}, ${b.state || "N/A"}</p>
+                    ${isActive === 0 ? `
+                        <button id="approveBtn" class="btn custom-btn">Approve</button>
+                        <button id="declineBtn" class="btn custom-decline-btn">Decline</button>
+                    ` : ""}
                 `;
+
+                // Attach event listener if Approve button exists
+                if (isActive === 0) {
+                    document.getElementById("approveBtn").addEventListener("click", () => approveBartender(b.bartenderID));
+                    document.getElementById("declineBtn").addEventListener("click", () => declineBartender(b.bartenderID));
+                }
             }
 
+
+            async function approveBartender(bartenderID) {
+                if (!confirm("Approve this bartender?")) return;
+
+                try {
+                    const res = await fetch("/api/bartenders/approve", {
+                    method: "POST", // Using POST instead of PUT
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ bartenderID })
+                    });
+
+                    const data = await res.json();
+
+                    if (data.success) {
+                    alert("Bartender approved!");
+                    loadBartenders(); // Refresh Request/Active lists
+                    document.getElementById("bartenderDetails").innerHTML =
+                        "<p>Select a bartender from the list.</p>";
+                    } else {
+                    alert("Failed to approve bartender: " + (data.message || ""));
+                    }
+
+                } catch (err) {
+                    console.error(err);
+                    alert("Error approving bartender.");
+                }
+            }
+
+            async function declineBartender(bartenderID) {
+                if (!confirm("Decline this bartender?")) return;
+
+                try {
+                    const res = await fetch("/api/bartenders/decline", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ bartenderID })
+                    });
+
+                    const data = await res.json();
+
+                    if (data.success) {
+                    alert("Bartender declined.");
+                    loadBartenders(); // Refresh lists
+                    document.getElementById("bartenderDetails").innerHTML =
+                        "<p>Select a bartender from the list.</p>";
+                    } else {
+                    alert("Failed to decline bartender: " + (data.message || ""));
+                    }
+                } catch (err) {
+                    console.error(err);
+                    alert("Error declining bartender.");
+                }
+            }
 
 
 
