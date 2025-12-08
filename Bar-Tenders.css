@@ -78,6 +78,19 @@ label.required::after {
     gap: 15px; 
 }
 
+.cover-container {
+    text-align: center;
+    border: 1px solid lightgrey;
+    border-radius: 0.25rem;
+    margin-top: 40px;
+    background: var(--off-white);
+    background-image: url("images/option1-1.png");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 90%;
+    padding: 80px;
+}
+
 .info-card {
     padding: 10px;
 }
@@ -255,6 +268,12 @@ label.required::after {
     display: block;
 }
 
+/* Bartender Request and Active Titles */
+.bartender-status {
+    background-color: var(--gold);
+    color: var(--black);
+}
+
 #wrapper {
     width: 95%;
     min-height: 100vh;
@@ -342,6 +361,10 @@ label.required::after {
   color: var(--black);
 }
 
+#bartenderList ul {
+    height: 150px;
+}
+
 .custom-btn {
     background-color: var(--wine-red);
     color: var(--gold);
@@ -350,4 +373,32 @@ label.required::after {
 .custom-btn:hover {
     background-color: var(--gold);
     color: var(--black);
+}
+
+.custom-decline-btn {
+    background-color: white;
+    color: var(--black);
+    border: 2px solid var(--black);
+}
+
+.custom-decline-btn:hover {
+    background-color: var(--gold);
+    border: 2px solid var(--gold);
+}
+
+.scrollable-group {
+    max-height: 150px;     /* Adjust height as needed */
+    overflow-y: scroll;      /* Enable vertical scrolling */
+    padding-left: 0;       /* Optional: remove default ul padding */
+    margin-bottom: 1rem;   /* Space below the list */
+}
+
+/* Optional: customize scrollbar */
+.scrollable-group::-webkit-scrollbar {
+    width: 6px;
+}
+
+.scrollable-group::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
 }
